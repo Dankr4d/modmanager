@@ -197,7 +197,7 @@ class Admin( object ):
 			return
 
 		if text == "/help":
-			self.mm.info("IN HELP")
+			mm_utils.msg_server("======== ADMIN COMMANDS ========")
 			for command in self.__commands:
 				subcmd = self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]
 				# self.mm.info(repr(command))
@@ -209,7 +209,11 @@ class Admin( object ):
 					if idx < chatcmdLen - 1:
 						line += "|"
 				line += " " + subcmd["args"] + ": " + subcmd["desc"]
-				host.sgl_sendTextMessage(0, 12, 2, line, 0)
+				mm_utils.msg_server(line)
+			mm_utils.msg_server("================================")
+			for idx in range(3):
+				mm_utils.msg_server("ADMIN COMMANDS LISTED IN SERVER CONSOLE!")
+				# host.sgl_sendTextMessage(0, 12, 2, line, 0)
 
 				# mm_utils.msg_server(line)
 			return
