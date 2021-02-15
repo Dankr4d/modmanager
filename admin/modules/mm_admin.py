@@ -55,7 +55,8 @@ __description__ = "Admin v%s" % __version__
 # Add all your configuration options here
 configDefaults = {
 	"admins": {
-		2001: "538fcdbc"
+		2001: "538fcdbc",
+		44981: "12341234",
 	},
 	"msgNotAnAdmin": "Tried to login as admin",
 	"msgNameHacks": "Name hacks",
@@ -67,31 +68,21 @@ configDefaults = {
 			"chat": ["warn", "w"]
 		},
 		{
-			"cmd": "bm",
-			"subcmd": "banPlayer",
-			"chat": ["ban"]
-		},
-		{
-			"cmd": "bm",
-			"subcmd": "removeBan",
-			"chat": ["unban"]
-		},
-		# {
-		# 	"cmd": "bm",
-		# 	"subcmd": "listBans",
-		# 	"chat": ["banlist"]
-		# },
-		{
 			"cmd": "adm",
 			"subcmd": "kick",
 			"chat": ["kick", "k"]
 		},
+		{
+			"cmd": "adm",
+			"subcmd": "ban",
+			"chat": ["ban", "b"]
+		},
+		{
+			"cmd": "adm",
+			"subcmd": "bana",
+			"chat": ["bana", "ba"]
+		},
 	],
-	# "admins": {
-	# 	"pid": 0,
-	# 	"name": "",
-	# 	"rights": [],
-	# }
 }
 
 class Admin( object ):
@@ -109,7 +100,9 @@ class Admin( object ):
 
 		# Your rcon commands go here:
 		self.__cmds = {
-			'kick': { 'method': self.cmdKick, 'level': 10 }
+			'kick': { 'method': self.cmdKick, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
+			'ban': { 'method': self.cmdBanKey, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
+			'bana': { 'method': self.cmdBanAddress, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
 		}
 
 	def cmdExec( self, ctx, cmd ):
@@ -119,32 +112,104 @@ class Admin( object ):
 		# messages in rcon if not overriden
 		return mm_utils.exec_subcmd( self.mm, self.__cmds, ctx, cmd )
 
+
 	def cmdKick(self, ctx, cmd):
-		"""Kick a player"""
+		"""Kick player for one round."""
 		# Note: The Python doc above is used for help / description
 		# messages in rcon if not overriden
 
-		### TODO: Following logic is redundant (copied from mm_rules module)
 		cmdSplit = cmd.split()
 		cmdSplitLen = len(cmdSplit)
 
-		playerName = cmdSplit[0]
-		reason = "Unknown"
-		if cmdSplitLen > 1:
-			reason = " ".join(cmdSplit[1:])
-		player = None
-		for playerTmp in bf2.playerManager.getPlayers():
-			if playerName.lower() in playerTmp.getName().lower():
-				player = playerTmp
-				break
-		##
-		if player == None:
-			return
+		if cmdSplitLen < 2:
+			ctx.write("TODO: playername reason")
+			return 0
 
-		self.mm.banManager().banPlayer(player, "Kicked for this round (" + reason + ")", "round")
-		# kickPlayer( self, player, kickReason=None, kickDelay=None, kickType=mm_utils.KickBanType.rcon )
+		player = mm_utils.find_player(cmdSplit[0])
+
+		if player == None:
+			ctx.write("TODO: player not found")
+			return 0
+
+		reason = " ".join(cmdSplit[1:])
+
+		bannedBy = None
+		if ctx.player != None:
+			bannedByPlayer = bf2.playerManager.getPlayerByIndex(ctx.player)
+			bannedBy = bannedByPlayer.getName() + " (" + str(bannedByPlayer.getProfileId()) + ")"
+
+		self.mm.banManager().banPlayer(player, reason + " (round)", "round", mm_utils.KickBanType.rcon, mm_utils.BanMethod.key, bannedBy)
 
 		return 1
+
+
+	def cmdBanLogic(self, ctx, cmd, banMethod):
+		self.mm.info("banMethod: " + repr(banMethod))
+		cmdSplit = cmd.split()
+		cmdSplitLen = len(cmdSplit)
+
+		if cmdSplitLen < 3:
+			ctx.write("TODO: playername reason")
+			return 0
+
+		player = mm_utils.find_player(cmdSplit[0])
+		period = cmdSplit[1]
+		reason = " ".join(cmdSplit[2:])
+
+		bannedBy = None
+		if ctx.player != None:
+			bannedByPlayer = bf2.playerManager.getPlayerByIndex(ctx.player)
+			bannedBy = bannedByPlayer.getName() + " (" + str(bannedByPlayer.getProfileId()) + ")"
+
+		# Permanent ban
+		if period == "perm":
+			reason += " (permanent)"
+			self.mm.banManager().banPlayer(player, reason, period, mm_utils.KickBanType.rcon, banMethod, bannedBy)
+			return 1
+
+		# Time based ban
+		periodLastChar = period[-1].lower()
+		period = mm_utils.get_int(ctx, period[:-1])
+
+		if period == None:
+			ctx.write("TODO: period[:-1] is not an int and not perm")
+			return 0
+
+		reason += " ("
+		reasonSuffix = ""
+		if period != 1:
+			reasonSuffix = "s"
+		reasonSuffix += ")"
+
+		reason += str(period) + " "
+		if periodLastChar == 'd': # day(s)
+			reason += "day"
+			period *= 60*60*24
+		elif periodLastChar == 'h': # hour(s)
+			reason += "hour"
+			period *= 60*60
+		elif periodLastChar == 'm': # minute(s)
+			reason += "minute"
+			period *= 60
+		else:
+			ctx.write("TODO: unknown perdio not d, h or m")
+			return 0
+		reason += reasonSuffix
+
+		self.mm.banManager().banPlayer(player, reason, str(period), mm_utils.KickBanType.rcon, banMethod, bannedBy)
+
+		return 1
+
+
+	def cmdBanKey(self, ctx, cmd):
+		"""Ban key of player permanent (perm) or a specific duration (m = minutes, h = hours, d = days)"""
+		return self.cmdBanLogic(ctx, cmd, mm_utils.BanMethod.key)
+
+
+	def cmdBanAddress(self, ctx, cmd):
+		"""Ban address (IP) of player permanent (perm) or a specific duration (m = minutes, h = hours, d = days)"""
+		return self.cmdBanLogic(ctx, cmd, mm_utils.BanMethod.address)
+
 
 	def onPlayerConnect(self, player):
 		"""Do something when a player connect."""
@@ -165,7 +230,9 @@ class Admin( object ):
 				self.mm.banManager().kickPlayer(player, self.__msgNotAnAdmin)
 				return
 			password = playerName[pos1 + 2:pos1 + 6] + playerName[pos2 + 2:pos2 + 6]
-			if self.__admins[profileId] != password:
+			if str(self.__admins[profileId]) != password:
+				# TODO: self.__admins[profileId] can return an integer if it's numeric only.
+				#				Don't know why, check this.
 				self.mm.banManager().kickPlayer(player, self.__msgNotAnAdmin)
 				return
 
@@ -196,12 +263,33 @@ class Admin( object ):
 		if playerIdx == -1:
 			return
 
-		if text == "/help":
+		player = bf2.playerManager.getPlayerByIndex(playerIdx)
+		profileId = player.getProfileId()
+
+		if not profileId in self.__admins.keys():
+			self.mm.info("Player is not an admin!")
+			return
+
+		prefix = ""
+		for chatPrefix in self.__chatPrefixes:
+			if text.strip().startswith(chatPrefix):
+				prefix = chatPrefix
+				break
+
+		if prefix == "":
+			self.mm.info("Normal text message, no command!")
+			return
+
+
+		textSplit = text.strip().split()
+		cmd = textSplit[0][len(prefix):]
+
+		self.mm.info("cmd: " + repr(cmd))
+
+		if cmd == "help":
 			mm_utils.msg_server("======== ADMIN COMMANDS ========")
 			for command in self.__commands:
 				subcmd = self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]
-				# self.mm.info(repr(command))
-				# self.mm.info(repr(subcmd))
 				line = ""
 				chatcmdLen = len(command["chat"])
 				for idx, chatcmd in enumerate(command["chat"]):
@@ -213,51 +301,15 @@ class Admin( object ):
 			mm_utils.msg_server("================================")
 			for idx in range(3):
 				mm_utils.msg_server("ADMIN COMMANDS LISTED IN SERVER CONSOLE!")
-				# host.sgl_sendTextMessage(0, 12, 2, line, 0)
-
-				# mm_utils.msg_server(line)
-			return
-
-		player = bf2.playerManager.getPlayerByIndex(playerIdx)
-		self.mm.info(repr(player))
-		profileId = player.getProfileId()
-		self.mm.info(repr(profileId))
-
-		if not profileId in self.__admins.keys():
-			self.mm.info("Player is not an admin!")
-			return
-
-		isCommand = False
-		prefix = ""
-		for chatPrefix in self.__chatPrefixes:
-			if text.strip().startswith(chatPrefix):
-				isCommand = True
-				prefix = chatPrefix
-				self.mm.info("Found chatprefix: " + prefix)
-
-		if not isCommand:
-			self.mm.info("Normal text message, no command!")
-
-
-		for command in self.__commands:
-			textSplit = text.strip().split()
-			cmdStr = textSplit[0][len(prefix):]
-
-			self.mm.info(repr(command))
-			self.mm.info("'" + cmdStr + "'")
-			self.mm.info(repr(command["chat"]))
-			# self.mm.info(repr(command.chat))
-
-			if cmdStr in command["chat"]:
-				self.mm.info("Found command")
-				self.mm.info(repr(self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]["method"]))
-				self.mm.info(repr(self.mm.rcon().getContext(playerIdx)))
-				self.mm.info(repr(text.replace(prefix, "").strip()))
-				self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]["method"](
-					self.mm.rcon().getContext(playerIdx),
-					text.strip().replace(prefix + cmdStr, "")
-				)
-				break
+		else:
+			# Execute rcon command added to commands list
+			for command in self.__commands:
+				if cmd in command["chat"]:
+					self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]["method"](
+						self.mm.rcon().getContext(playerIdx),
+						text.strip().replace(prefix + cmd, "")
+					)
+					break
 
 
 	def init( self ):
