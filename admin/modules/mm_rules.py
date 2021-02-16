@@ -70,7 +70,7 @@ class Rules( object ):
 
 		# Your rcon commands go here:
 		self.__cmds = {
-			'warn': { 'method': self.cmdWarnRule, 'aliases': [ 'w' ], 'args': "<playerName|string> <ruleKeyWords|text>", 'level': 10 },
+			'warn': { 'method': self.cmdWarnRule, 'aliases': [ 'w' ], 'args': "<player|string> <ruleKeyWords|text>", 'level': 10 },
 		}
 
 		self.showRuleIdx = 0

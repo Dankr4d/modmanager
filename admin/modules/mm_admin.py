@@ -82,6 +82,11 @@ configDefaults = {
 			"subcmd": "bana",
 			"chat": ["bana", "ba"]
 		},
+		{
+			"cmd": "adm",
+			"subcmd": "unban",
+			"chat": ["unban"]
+		},
 	],
 }
 
@@ -100,10 +105,24 @@ class Admin( object ):
 
 		# Your rcon commands go here:
 		self.__cmds = {
-			'kick': { 'method': self.cmdKick, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
-			'ban': { 'method': self.cmdBanKey, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
-			'bana': { 'method': self.cmdBanAddress, 'args': '<name> <perm|duration> <reason>', 'level': 10 },
+			'kick': { 'method': self.cmdKick, 'args': '<player> <reason>', 'level': 10 },
+			'ban': { 'method': self.cmdBanKey, 'args': '<player> <perm|duration> <reason>', 'level': 10 },
+			'bana': { 'method': self.cmdBanAddress, 'args': '<player> <perm|duration> <reason>', 'level': 10 },
+			'unban': { 'method': self.cmdUnban, 'args': '<player> <reason>', 'level': 10 },
 		}
+
+
+	def findBansByName(self, name):
+		result = []
+		bans = self.mm.banManager().getBanList()
+
+		for key in bans.keys():
+			ban = bans[key]
+			if name.lower() in ban["nick"].lower():
+				result.append(ban)
+
+		return result
+
 
 	def cmdExec( self, ctx, cmd ):
 		"""Execute a MyModule sub command."""
@@ -144,7 +163,6 @@ class Admin( object ):
 
 
 	def cmdBanLogic(self, ctx, cmd, banMethod):
-		self.mm.info("banMethod: " + repr(banMethod))
 		cmdSplit = cmd.split()
 		cmdSplitLen = len(cmdSplit)
 
@@ -202,13 +220,49 @@ class Admin( object ):
 
 
 	def cmdBanKey(self, ctx, cmd):
-		"""Ban key of player permanent (perm) or a specific duration (m = minutes, h = hours, d = days)"""
+		"""Ban player key permanent (perm) or for a specific duration (m = minutes, h = hours, d = days)."""
 		return self.cmdBanLogic(ctx, cmd, mm_utils.BanMethod.key)
 
 
 	def cmdBanAddress(self, ctx, cmd):
-		"""Ban address (IP) of player permanent (perm) or a specific duration (m = minutes, h = hours, d = days)"""
+		"""Ban address permanent (perm) or for a specific duration (m = minutes, h = hours, d = days)."""
 		return self.cmdBanLogic(ctx, cmd, mm_utils.BanMethod.address)
+
+
+	def cmdUnban(self, ctx, cmd):
+		"""Unban player."""
+		cmdSplit = cmd.split()
+		cmdSplitLen = len(cmdSplit)
+
+		if cmdSplitLen < 2:
+			self.mm.info("TODO: <playername> <reason>")
+			return
+
+		playerName = cmdSplit[0]
+		reason = " ".join(cmdSplit[1:])
+
+		bans = self.findBansByName(playerName)
+		bansLen = len(bans)
+
+		if bansLen == 0:
+			self.mm.info("TODO: No ban found.")
+			return
+		elif bansLen > 1:
+			self.mm.info("TODO: More than one ban found.")
+			return
+
+		ban = bans[0]
+		banKey = ""
+
+		if ban["method"] == mm_utils.BanMethod.key:
+			banKey = ban["cdkeyhash"]
+		elif ban["method"] == mm_utils.BanMethod.address:
+			banKey = ban["address"]
+		else:
+			self.mm.info("TODO: Ban method is invalid (it's not a key or address ban).")
+			return
+
+		self.mm.banManager().unbanPlayer(banKey, reason)
 
 
 	def onPlayerConnect(self, player):
@@ -267,7 +321,6 @@ class Admin( object ):
 		profileId = player.getProfileId()
 
 		if not profileId in self.__admins.keys():
-			self.mm.info("Player is not an admin!")
 			return
 
 		prefix = ""
@@ -277,14 +330,10 @@ class Admin( object ):
 				break
 
 		if prefix == "":
-			self.mm.info("Normal text message, no command!")
 			return
-
 
 		textSplit = text.strip().split()
 		cmd = textSplit[0][len(prefix):]
-
-		self.mm.info("cmd: " + repr(cmd))
 
 		if cmd == "help":
 			mm_utils.msg_server("======== ADMIN COMMANDS ========")
@@ -300,7 +349,7 @@ class Admin( object ):
 				mm_utils.msg_server(line)
 			mm_utils.msg_server("================================")
 			for idx in range(3):
-				mm_utils.msg_server("ADMIN COMMANDS LISTED IN SERVER CONSOLE!")
+				mm_utils.msg_server("ADMIN COMMANDS LISTED IN CONSOLE!")
 		else:
 			# Execute rcon command added to commands list
 			for command in self.__commands:
@@ -337,6 +386,7 @@ class Admin( object ):
 		# Update to the running state
 		self.__state = 1
 
+
 	def shutdown( self ):
 		"""Shutdown and stop processing."""
 
@@ -349,12 +399,14 @@ class Admin( object ):
 		# host.unregisterHandler
 		self.__state = 2
 
+
 	def update( self ):
 		"""Process and update.
 		Note: This is called VERY often processing in here should
 		be kept to an absolute minimum.
 		"""
 		pass
+
 
 def mm_load( modManager ):
 	"""Creates and returns your object."""
