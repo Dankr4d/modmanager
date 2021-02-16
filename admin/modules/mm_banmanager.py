@@ -6,41 +6,45 @@ This is a Ban Manager ModManager module
 ===== Config =====
  # The filename to use for bans
  mm_banmanager.banFilename "mm_bans.xml"
- 
+
  # The message format announced to players being banned
  # This must include the template %s <player> and %s <reason>
- mm_banmanager.banMessage "%s you are being banned (reason:%s)
- 
+ mm_banmanager.banMessage "%s you are being banned (reason:%s)"
+
+ # The message format announced to server being banned
+ # This must include the template %s <player> and %s <reason>
+ mm_banmanager.unbanMessage "%s has been unbanned (reason: %s)"
+
  # The default ban reason
  mm_banmanager.defaultBanReason "Unknown"
- 
+
  # The default ban period
  mm_banmanager.defaultBanPeriod "Perm"
- 
+
  # The default ban method must be either "Key" or "Address"
  mm_banmanager.defaultBanMethod "Key"
- 
+
  # The default ban message delay
  mm_banmanager.defaultBanDelay 5
- 
+
  # The default unban reason
  mm_banmanager.defaultUnBanReason "Unknown"
- 
- # The default ban nick 
+
+ # The default ban nick
  mm_banmanager.defaultBanNick "N/A"
- 
- # The default ban address 
+
+ # The default ban address
  mm_banmanager.defaultBanAddress "N/A"
- 
-  # The default ban cd key hash 
+
+  # The default ban cd key hash
  mm_banmanager.defaultBanCdKeyHash "N/A"
- 
+
  # The default kick reason
  mm_banmanager.defaultKickReason "Unknown"
- 
+
  # The date time format used for bans parsed in and output in the xml
  mm_banmanager.dateTimeFormat "%d/%m/%Y %H:%M:%S %Z"
- 
+
  # The backup date time format used to parse in bans from the xml file
  mm_banmanager.oldDateTimeFormat "%a %b %d %H:%M:%S %Y"
 
@@ -61,13 +65,13 @@ It is strongly recommended you do NOT change defaultBanAddress, defaultBanCdKeyH
 
  v3.5 - 10/10/2006:
  Now uses .search instead of .match on regexps
- 
+
  v3.4 - 30/08/2006:
- Added supported games 
- 
+ Added supported games
+
  v3.3 - 17/04/2006:
  Added dateTime and skipSave params to banPlayerKey and banPlayerAddress methods
- 
+
  v3.2 - 05/04/2006:
  API cleanup implementing internal __addBan __removeBan methods which are now exclusively used for manipulating the internal ban list
  Added local rcon method listBans
@@ -85,20 +89,20 @@ It is strongly recommended you do NOT change defaultBanAddress, defaultBanCdKeyH
 
  v2.8 - 22/03/2006:
  Corrected usage of ban['datetime'] and time.now() typo in periodic ban reads
- 
+
  v2.7 - 11/03/2006:
  Corrected shutdown of onGameStatusChanged
- 
+
  v2.6 - 10/03/2006:
  Added dateTimeFormat and oldDateTimeFormat parameter to allow for custom formats. Note all dates are stored and output in GMT.
- 
+
  v2.5 - 08/03/2006:
  A banDelay of 0 passed to banPlayer now prevents any ban message being displayed.
- 
+
  v2.4 - 02/03/2006:
  Now clears all legacy bans on load if a Banmanager banfile is detected and on map change. This prevents old bans creeping in unnoticed.
  Corrected availability of now variable for timed bans
- 
+
  v2.3 - 02/03/2006:
  Optimised logic ( common case first ).
  Corrected typo in clearBans for time based bans.
@@ -108,45 +112,45 @@ It is strongly recommended you do NOT change defaultBanAddress, defaultBanCdKeyH
 
  v2.1 - 26/02/2006:
  clearBanList now correctly clears __roundBans and __unbanTimers preventing incorrect warnings when the cleared bans expire.
- 
+
  v2.0 - 22/02/2006:
  Added defaultBanCdKeyHash, defaultBanAddress and defaultBanProfileId config options
  Now checks to ensure that banMethod is valid and will attempt to correct based on the ban info available
  Now deals with duplicate bans within the ban message notification period
  Added kickPlayer and kickPlayerNow methods which replace those from mm_utils
  Now checks to ensure Round bans arent read back in from disk on initialisation
- 
+
  v1.9 - 22/02/2006:
  Corrected documented defaults for defaultBanPeriod => "Perm" and defaultBanMethod => "Key"
- 
+
  v1.8 - 21/02/2006:
  Added getBanList method which returns a copy of the servers current banlist hash
  Corrected banlist read in for player nick
  Renamed validateBanKey to validateBanAddressOrKey ( more approproate name )
  Now calls validatePlayerName to determine the Player Nick in legacy methods
  Removed spurious ',' which broke banPlayerNow
- 
+
  v1.7 - 20/02/2006:
  Now escapes XML entities
  Added defaultBanNick
  Now validates banfile on read in fixing data if possible
- 
+
  v1.6 - 19/02/2006:
  Enhanced input validation to unban method
- 
+
  v1.5 - 19/02/2006:
  Added check for invalid unban ( empty ban key / address )
  Added early determination of player: name, profileid, address and cdkey
  Enhanced error detection and recovery for delayed bans
  Added unBanReason validation
- 
+
  v1.4 - 18/02/2006:
  Fixed cut and paste error in validateBanKey
- 
+
  v1.3 - 16/02/2006:
  Added validation for ban cdkey hashes and addresses
  Fixed log entry for banPlayerAddress and banPlayerKey
- 
+
  v1.2 - 15/02/2006:
  Now uses admin.addAddressToBanList and admin.addKeyToBanList as a backup to admin.banPlayer and admin.banPlayerKey
  Corrected inverted use of admin.banPlayer and admin.banPlayerKey
@@ -160,10 +164,10 @@ It is strongly recommended you do NOT change defaultBanAddress, defaultBanCdKeyH
  Now deals with from now and epoc bans
  Added expireBan
  unbanPlayer now takes an optional reason
- 
+
  v1.1 - 13/02/2006:
  Error case trap for player.getName() failing added
- 
+
  v1.0 - 01/02/2006:
  Initial version
 
@@ -204,6 +208,7 @@ configDefaults = {
 	# The filename to use for bans
 	'banFilename': 'mm_bans.xml',
 	'banMessage': '%s you are being banned (reason: %s)',
+	'unbanMessage': '%s has been unbanned (reason: %s)',
 	'kickMessage': '%s you are being kicked (reason: %s)',
 	'defaultBanDelay': 5,
 	'defaultBanReason': 'Unknown',
@@ -458,7 +463,7 @@ class BanManager( object ):
 			return self.__config['defaultBanPeriod']
 
 		lowerBanPeriod = banPeriod.lower()
-		
+
 		if 'perm' == lowerBanPeriod:
 			# Ban for permanently
 			return 'Perm'
@@ -550,12 +555,12 @@ class BanManager( object ):
 		self.writeBanlist( banFile );
 
 		banFile.close()
-	
+
 		return True
 
 	def getBanList( self ):
 		"""Returns a copy of the banlist."""
-		self.__bans.copy()
+		return self.__bans.copy()
 
 	def writeBanlist( self, banFile ):
 		"""Write the banlist out."""
@@ -646,36 +651,36 @@ class BanManager( object ):
 
 		return None
 
-	def __removeBan( self, ban, unBanReason=None, skipSave=False ):
+	def __removeBan( self, banKey, unBanReason=None, skipSave=False ):
 		"""Unban a player."""
-		ban = self.validateBanAddressOrKey( ban )
+		banKey = self.validateBanAddressOrKey( banKey )
 
-		if ban is None:
+		if banKey is None:
 			self.mm.error( "Invalid unban request ( Ban key / address blank )")
 			return False
 
 		unBanReason = self.validateUnBanReason( unBanReason )
-		self.mm.info( "Removing ban '%s' (%s)" % ( ban, unBanReason ) )
+		self.mm.info( "Removing ban '%s' (%s)" % ( banKey, unBanReason ) )
 
 		# N.B. We do this blindly to to ensure that its done
 		if not self.mm.isBattleFieldHeroes():
-			host.rcon_invoke( "admin.removeAddressFromBanList %s" % ( ban ) )
-		host.rcon_invoke( "admin.removeKeyFromBanList %s" % ( ban ) )
+			host.rcon_invoke( "admin.removeAddressFromBanList %s" % ( banKey ) )
+		host.rcon_invoke( "admin.removeKeyFromBanList %s" % ( banKey ) )
 
 		# Remove any unban timer
-		if self.__unBanTimers.has_key( ban ):
-			self.__unBanTimers[ban].destroy()
-			del self.__unBanTimers[ban]
+		if self.__unBanTimers.has_key( banKey ):
+			self.__unBanTimers[banKey].destroy()
+			del self.__unBanTimers[banKey]
 
-		if self.__bans.has_key( ban ):
-			del self.__bans[ban]
+		if self.__bans.has_key( banKey ):
+			del self.__bans[banKey]
 
 			if skipSave:
 				return True
 			# Persist the banlist
 			return self.saveBanlist()
 		else:
-			self.mm.warn( "Ban '%s' not found" % ban )
+			self.mm.warn( "Ban '%s' not found" % banKey )
 
 		return False
 
@@ -705,13 +710,26 @@ class BanManager( object ):
 
 		return True
 
-	def expireBan( self, ban, skipSave=False ):
+	def expireBan( self, banKey, skipSave=False ):
 		"""Remove an expired ban on a player."""
-		self.__removeBan( ban, 'Expired', skipSave )
+		ban = self.__bans[banKey]
 
-	def unbanPlayer( self, ban, unBanReason=None ):
+		self.__removeBan( banKey, 'Expired', skipSave )
+
+		msg = self.__config['unbanMessage'] % ( ban['nick'], "Expired" )
+		mm_utils.msg_server( msg )
+
+	def unbanPlayer( self, banKey, unBanReason=None ):
 		"""Unban a player."""
-		return self.__removeBan( ban, unBanReason )
+		result = False
+		ban = self.__bans[banKey]
+
+		result = self.__removeBan( banKey, unBanReason )
+
+		msg = self.__config['unbanMessage'] % ( ban['nick'], unBanReason )
+		mm_utils.msg_server( msg )
+
+		return result
 
 	def banList( self, ctx ):
 		"""Writes the banlist to the passed client context."""
@@ -757,7 +775,7 @@ class BanManager( object ):
 		"""Ban a player for a given period with a reason."""
 		if self.__banTimers.has_key( player.index ):
 			# We already have a ban scheduled for this player
-			self.mm.warn( "Ban failed ( Ban already in progress for player %d )" % ( player.index ) )	
+			self.mm.warn( "Ban failed ( Ban already in progress for player %d )" % ( player.index ) )
 			return False
 
 		# N.B. We store a copy of key player info in case they leave before the ban activates
@@ -790,19 +808,19 @@ class BanManager( object ):
 			'name': self.validatePlayerName( player_name ),
 			'profileid': player_profileid,
 			'address': player_address,
-			'cdkeyhash': cdkeyhash 
+			'cdkeyhash': cdkeyhash
 		}
 
 		if mm_utils.BanMethod.key == player.mmBanDetails['method']:
 			if player.mmBanDetails['cdkeyhash'] is None:
 				# Can't ban this player: Ban by cdkeyhash and no cdkeyhash information
-				self.mm.error( "Ban failed ( Unable to determine cdkeyhash for player %d '%s' )" % ( player.index, player_name ) )	
+				self.mm.error( "Ban failed ( Unable to determine cdkeyhash for player %d '%s' )" % ( player.index, player_name ) )
 				return False
 
 		elif mm_utils.BanMethod.address == player.mmBanDetails['method']:
 			if player.mmBanDetails['address'] is None:
 				# Can't ban this player: Ban by address and no address information
-				self.mm.error( "Ban failed ( Unable to determine address for player %d '%s' )" % ( player.index, player_name ) )	
+				self.mm.error( "Ban failed ( Unable to determine address for player %d '%s' )" % ( player.index, player_name ) )
 				return False
 
 		banDelay = self.validateBanDelay( banDelay )
@@ -871,13 +889,13 @@ class BanManager( object ):
 			if mm_utils.BanMethod.key == player.mmBanDetails['method']:
 				if player.mmBanDetails['cdkeyhash'] is None:
 					# Can't ban this player: Ban by cdkeyhash and no cdkeyhash information
-					self.mm.error( "Ban failed ( Unable to determine cdkeyhash for player %d '%s' )" % ( player.index, player.mmBanDetails['name'] ) )	
+					self.mm.error( "Ban failed ( Unable to determine cdkeyhash for player %d '%s' )" % ( player.index, player.mmBanDetails['name'] ) )
 					return False
 
 			elif mm_utils.BanMethod.address == player.mmBanDetails['method']:
 				if player.mmBanDetails['address'] is None:
 					# Can't ban this player: Ban by address and no address information
-					self.mm.error( "Ban failed ( Unable to determine address for player %d '%s' )" % ( player.index, player.mmBanDetails['name'] ) )	
+					self.mm.error( "Ban failed ( Unable to determine address for player %d '%s' )" % ( player.index, player.mmBanDetails['name'] ) )
 					return False
 
 			ban = self.__addBan(
@@ -917,7 +935,7 @@ class BanManager( object ):
 		"""Kick a player with a reason."""
 		if self.__kickTimers.has_key( player.index ):
 			# Already scheduled for a kick
-			self.mm.warn( "Kick failed ( Kick already in progress for player %d )" % ( player.index ) )	
+			self.mm.warn( "Kick failed ( Kick already in progress for player %d )" % ( player.index ) )
 			return False
 
 		if kickType != mm_utils.KickBanType.rcon:
@@ -947,7 +965,7 @@ class BanManager( object ):
 			if not hasattr( player, 'mmKickType' ):
 				kickType = mm_utils.KickBanType.rcon
 			else:
-				kickType = player.mmKickType				
+				kickType = player.mmKickType
 
 		if kickType != mm_utils.KickBanType.rcon:
 			mm.warn( "Unsupported kick type '%d' (using %d instead)" % ( kickType, mm_utils.KickBanType.rcon ) )
@@ -958,7 +976,7 @@ class BanManager( object ):
 
 		# Log the kick
 		if hasattr( player, 'mmKickReason' ):
-			reason = self.validateKickReason( player.mmKickReason )			
+			reason = self.validateKickReason( player.mmKickReason )
 		else:
 			reason = self.validateKickReason( None )
 
