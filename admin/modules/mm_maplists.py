@@ -66,7 +66,14 @@ class MapRotation( object ):
 
 
 	def maplistLogic(self, playerConnected = False):
-		playerCount = len(bf2.playerManager.getPlayers())
+		playerCount = 0
+
+		if host.sgl_getIsAIGame():
+			for player in bf2.playerManager.getPlayers():
+				if not player.isAIPlayer():
+					playerCount += 1
+		else:
+			playerCount = bf2.playerManager.getNumberOfPlayers()
 
 		if not playerConnected:
 			playerCount -= 1
@@ -83,7 +90,8 @@ class MapRotation( object ):
 		"""Update maplist if treshold is reached."""
 		if 1 != self.__state:
 			return 0
-		# Put your actions here
+		if player.isAIPlayer():
+			return 0
 		self.maplistLogic(True)
 
 
@@ -91,7 +99,8 @@ class MapRotation( object ):
 		"""Update maplist if treshold is reached."""
 		if 1 != self.__state:
 			return 0
-		# Put your actions here
+		if player.isAIPlayer():
+			return 0
 		self.maplistLogic(False)
 
 
