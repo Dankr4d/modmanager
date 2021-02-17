@@ -7,29 +7,29 @@ This is an Auto Announcer ModManager module
  # Add a join message
  # Join messages can include the special string %player% which will be replaced with the joining players name
  mm_announcer.addJoinMessage "<message>"
- 
+
  # Add a timed message
  mm_announcer.addTimedMessage "<start>:<repeat>:<message>"
 
 ===== Rcon commands =====
  # List the current announcements
  announcer list
- 
+
  # Add a timed message
  announcer addTimed <start> <repeat> "<message>"
- 
+
  # Remove a timed message
  announcer removeTimed <announceid>
- 
+
  # Remove all timed messages
  announcer clearTimed
- 
+
  # Add a join message
  announcer addJoin "<message>"
- 
+
  # Remove a join message
  announcer removeJoin <announceid>
- 
+
  # Remove all join messages
  announcer clearJoin
 
@@ -42,7 +42,7 @@ This is an Auto Announcer ModManager module
  Added BFP4F Support
 
  v1.7 - 13/01/2009:
- New line '|' splits ignore patterns which are immediately preceded by the pattern: 'ง\d+'
+ New line '|' splits ignore patterns which are immediately preceded by the pattern: '๏ฟฝ\d+'
 
  v1.6 - 22/09/2006:
  Added the ability to put the players name in join messages using the special string: %player%
@@ -56,14 +56,14 @@ This is an Auto Announcer ModManager module
 
  v1.3 - 12/08/2005:
  Fixed module shutdown error
- 
+
  v1.2 - 01/08/2005:
  Corrected list output
  Added default timed message
-  
+
  v1.1 - 27/07/2005:
  Added new line support and updated documentation
- 
+
  v1.0 - 30/06/2005:
  Initial version
 
@@ -121,11 +121,11 @@ class Announcer( object ):
 
 	def escape_codes( self, txt ):
 		"""Escape codes."""
-		return re.sub( 'ง(?P<num>\d+)\|', 'ง\g<num>#=#=', txt )
+		return re.sub( 'ยง(?P<num>\d+)\|', 'ยง\g<num>#=#=', txt )
 
 	def unescape_codes( self, txt ):
 		"""Escape codes."""
-		return re.sub( 'ง(?P<num>\d+)#=#=', 'ง\g<num>|', txt )
+		return re.sub( 'ยง(?P<num>\d+)#=#=', 'ยง\g<num>|', txt )
 
 	def announce( self, details ):
 		"""Announce the message to the server."""
@@ -296,12 +296,16 @@ class Announcer( object ):
 		"""Make a note of the connected player."""
 		if 1 != self.__state:
 			return 0
+		if player.isAIPlayer():
+			return 0
 
 		self.__newPlayers[player.index] = player
 
 	def onPlayerDisconnect( self, player ):
 		"""Remove our reference to the connected player."""
 		if 1 != self.__state:
+			return 0
+		if player.isAIPlayer():
 			return 0
 
 		if self.__newPlayers.has_key( player.index ):
@@ -310,6 +314,8 @@ class Announcer( object ):
 	def onPlayerSpawn( self, player, soldier ):
 		"""Announce to new spawning players."""
 		if 1 != self.__state:
+			return 0
+		if player.isAIPlayer():
 			return 0
 
 		if self.__newPlayers.has_key( player.index ):
