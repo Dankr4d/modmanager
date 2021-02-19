@@ -48,7 +48,7 @@ configDefaults = {
 		"No bad language",
 		"No pod surfing",
 		"No mines on titan shield",
-		"No spotting in titan guns after shields went down",
+		"No spotting in titan guns when shields are down",
 	],
 }
 

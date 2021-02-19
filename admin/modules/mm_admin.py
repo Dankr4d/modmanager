@@ -113,7 +113,8 @@ class Admin( object ):
 
 
 	def cmdHelp(self, ctx, cmd):
-		ctx.write("======== CHAT COMMANDS ========\n")
+		"""List available chat commands in console."""
+		ctx.write("################ CHAT COMMANDS ################\n")
 		for command in self.__commands:
 			subcmd = self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]
 			line = ""
@@ -124,7 +125,7 @@ class Admin( object ):
 					line += "|"
 			line += " " + subcmd["args"] + ": " + subcmd["desc"] + "\n"
 			ctx.write(line)
-		ctx.write("================================\n")
+		ctx.write("###############################################\n")
 
 	def cmdKick(self, ctx, cmd):
 		"""Kick player for one round."""
