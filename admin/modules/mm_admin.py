@@ -1,31 +1,5 @@
 # vim: ts=4 sw=4 noexpandtab
-"""Sample module.
-
-This is a Sample ModManager module
-
-===== Config =====
- # Sets option 1
- mm_sample.myOption1 1
-
- # Sets option 2
- mm_sample.myOption2 "hello there"
-
-===== History =====
- v1.3 - 30/08/2006:
- Added supported games
-
- v1.2 - 13/08/2005:
- Added missing mm.unregisterRconCmdHandler to shutdown
-
- v1.1 - 29/07/2005:
- Updated API definition
-
- v1.0 - 01/07/2005:
- Initial version
-
-Copyright (c)2005 Multiplay
-Author: Steven 'Killing' Hartland
-"""
+"""Admin module."""
 
 import bf2
 import host
@@ -125,7 +99,7 @@ class Admin( object ):
 
 
 	def cmdExec( self, ctx, cmd ):
-		"""Execute a MyModule sub command."""
+		"""Execute an Admin sub command."""
 
 		# Note: The Python doc above is used for help / description
 		# messages in rcon if not overriden
@@ -323,6 +297,9 @@ class Admin( object ):
 		if not profileId in self.__admins.keys():
 			return
 
+		if self.mm.getRconContext(playerIdx).authedLevel == 0:
+			return # Player not authenticated via rcon
+
 		prefix = ""
 		for chatPrefix in self.__chatPrefixes:
 			if text.strip().startswith(chatPrefix):
@@ -354,10 +331,10 @@ class Admin( object ):
 			# Execute rcon command added to commands list
 			for command in self.__commands:
 				if cmd in command["chat"]:
-					self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]["method"](
-						self.mm.rcon().getContext(playerIdx),
-						text.strip().replace(prefix + cmd, "")
-					)
+					self.mm.runRconCommand(playerIdx, "%s %s" % (
+						command["cmd"] + " " + command["subcmd"],
+						text.strip().replace(prefix + cmd + " ", "")
+					))
 					break
 
 

@@ -10,28 +10,28 @@ in os and sys breaking the core ones
 
  v3.3 - 13/01/2009:
  Added to_unicode method and removed escaping from xml_escape as all calls now pass in unicode
- 
+
  v3.2 - 29/11/2008:
  xml_escape now uses encode ignore instead of encode of replace
 
  v3.1 - 28/11/2008:
  largs now supports wanted = 0 which returns as many arguments as there are
- 
+
  v3.0 - 20/10/2008:
  Escaped player names in wild card search so that pattern characters in the player name e.g. * dont break the search
- 
+
  v2.9 - 28/06/2007:
  find_player now supports wild card matching on player name if requested
- 
+
  v2.8 - 18/02/2007:
  Reverted to use server message as player message only works for player slot 0
- 
+
  v2.7 - 01/12/2006:
  Fixed typo's in find_player and enhanced so that quotes and spaces are striped from names
 
  v2.6 - 03/11/2006:
  Added find_player which finds a player given either a player name or playerid
- 
+
  v2.5 - 18/10/2006:
  Fix for largs returing invalid details if the first character was a quote
 
@@ -53,41 +53,41 @@ in os and sys breaking the core ones
  v1.9 - 22/02/2006:
  kick_player and kick_player_now are now depricated see mm_banmanager kickPlayer and kickPlayerNow for replacements
  Added largs method for parsing arguments from a string
-  
+
  v1.8 - 20/02/2006:
  Added xml.sax.saxutils replacement methods xml_escape and xml_unescape
- 
+
  v1.7 - 16/02/2006:
  Removed debug from get_player_by_cd_key_hash
  Made get_int more resilient to bad input ( strips quotes and spaces )
- 
+
  v1.6 - 15/02/2006:
  Now uses self.mm.banManager().<method>
  banReason's now default to None see: mm_banmanager.defaultBanReason
  banPeriod's now default to None see: mm_banmanager.defaultBanPeriod
  get_cd_key_hash now caches the players cdkey for faster access
- 
+
  v1.5 - 01/02/2006:
  Added a default for mmKickReason to kick_player_now
  Added a default for mmBanReason to ban_player_now
  Now delegates bans to the Ban Manager
  Added get_player_by_cd_key_hash method
  Added get_cd_key_hash method
- 
+
  v1.4 - 14/08/2005:
  Removed prefix param from MsgChannel constructor.
  MsgChannel.stripPrefix now removes all known prefixes for all channels
  Added status_name which will return a string of the passed in GameState
- 
+
  v1.3 - 10/08/2005:
  Message methods now check and truncate long messages to avoid server crashes.
- 
+
  v1.2 - 26/07/2005:
  Added msg_server and msg_player methods
- 
+
  v1.1 - 11/07/2005:
  Added Message constant classes, MsgChannel and MsgType
- 
+
  v1.0 - 26/06/2005:
  Initial version
 
@@ -342,7 +342,7 @@ def exec_subcmd( mm, subcmds, ctx, cmd ):
 				mm.error( "%s: Failed to run sub command '%s'" % ( module, ctx.currentCmd ), True )
 				ctx.write('Exception in sub command \'%s\' %s %s (%s)\n' % ( ctx.currentCmd, str(execInfo[0]), str(e), lineNum))
 		else:
-			ctx.write( "error: you are not authorised to use the command '%s' it requires level %d you are only level %d" % ( subcmd, ctx.authedLevel, cmd_details['level'] ) )
+			ctx.write( "error: you are not authorised to use the command '%s' it requires level %d you are only level %d" % ( subcmd, subcmd_details['level'], ctx.authedLevel ) )
 			mm.warn( "Client %s tried to invoke '%s' without sufficient auth level" % ( ctx.getName(), subcmd ) )
 	else:
 		err = "%s: unknown sub command '%s'\n" % ( module, subcmd )
@@ -520,7 +520,7 @@ def largs( data, on, want, default='', quoted=False ):
 				break
 
 		#mm.warn( "d:%d, s:%d, q:%s, left:%s" % ( d, s, quote, left.strip() ) )
-	
+
 		if -1 == d and -1 == s:
 			# they where all escaped quotes
 			break

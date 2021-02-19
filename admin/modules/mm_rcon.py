@@ -536,11 +536,11 @@ configDefaults = {
 	'admins': {
 		2001: {
 			"password": "password",
-			"authLevel": 50,
+			"authLevel": 10,
 		},
 		44981: {
 			"password": "openspy",
-			"authLevel": 50,
+			"authLevel": 10,
 		},
 	},
 	'rconPassword': '',
