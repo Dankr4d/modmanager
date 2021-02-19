@@ -37,6 +37,11 @@ configDefaults = {
 	"chatPrefixes": ["!", "/"],
 	"commands": [
 		{
+			"cmd": "adm",
+			"subcmd": "help",
+			"chat": ["help", "?"]
+		},
+		{
 			"cmd": "rules",
 			"subcmd": "warn",
 			"chat": ["warn", "w"]
@@ -79,6 +84,7 @@ class Admin( object ):
 
 		# Your rcon commands go here:
 		self.__cmds = {
+			'help': { 'method': self.cmdHelp, 'level': 10 },
 			'kick': { 'method': self.cmdKick, 'args': '<player> <reason>', 'level': 10 },
 			'ban': { 'method': self.cmdBanKey, 'args': '<player> <perm|duration> <reason>', 'level': 10 },
 			'bana': { 'method': self.cmdBanAddress, 'args': '<player> <perm|duration> <reason>', 'level': 10 },
@@ -105,6 +111,20 @@ class Admin( object ):
 		# messages in rcon if not overriden
 		return mm_utils.exec_subcmd( self.mm, self.__cmds, ctx, cmd )
 
+
+	def cmdHelp(self, ctx, cmd):
+		ctx.write("======== CHAT COMMANDS ========\n")
+		for command in self.__commands:
+			subcmd = self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]
+			line = ""
+			chatcmdLen = len(command["chat"])
+			for idx, chatcmd in enumerate(command["chat"]):
+				line += chatcmd
+				if idx < chatcmdLen - 1:
+					line += "|"
+			line += " " + subcmd["args"] + ": " + subcmd["desc"] + "\n"
+			ctx.write(line)
+		ctx.write("================================\n")
 
 	def cmdKick(self, ctx, cmd):
 		"""Kick player for one round."""
@@ -310,32 +330,16 @@ class Admin( object ):
 			return
 
 		textSplit = text.strip().split()
-		cmd = textSplit[0][len(prefix):]
+		chatCmd = textSplit[0][len(prefix):]
 
-		if cmd == "help":
-			mm_utils.msg_server("======== ADMIN COMMANDS ========")
-			for command in self.__commands:
-				subcmd = self.mm.rcon()._AdminServer__cmds[command["cmd"]]["subcmds"][command["subcmd"]]
-				line = ""
-				chatcmdLen = len(command["chat"])
-				for idx, chatcmd in enumerate(command["chat"]):
-					line += chatcmd
-					if idx < chatcmdLen - 1:
-						line += "|"
-				line += " " + subcmd["args"] + ": " + subcmd["desc"]
-				mm_utils.msg_server(line)
-			mm_utils.msg_server("================================")
-			for idx in range(3):
-				mm_utils.msg_server("ADMIN COMMANDS LISTED IN CONSOLE!")
-		else:
-			# Execute rcon command added to commands list
-			for command in self.__commands:
-				if cmd in command["chat"]:
-					self.mm.runRconCommand(playerIdx, "%s %s" % (
-						command["cmd"] + " " + command["subcmd"],
-						text.strip().replace(prefix + cmd + " ", "")
-					))
-					break
+		# Execute rcon command added to commands list
+		for command in self.__commands:
+			if chatCmd in command["chat"]:
+				self.mm.runRconCommand(playerIdx, "%s %s" % (
+					command["cmd"] + " " + command["subcmd"],
+					text.strip().replace(prefix + chatCmd + " ", "")
+				))
+				break
 
 
 	def init( self ):
