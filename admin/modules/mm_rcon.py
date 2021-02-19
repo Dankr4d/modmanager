@@ -4,52 +4,52 @@
 ===== Config =====
  # The port to enable rcon on
  mm_rcon.rconPort 4711
- 
+
  # The IP to listen on
  mm_rcon.rconIp "0.0.0.0"
- 
+
  # The basic admin password
  mm_rcon.rconBasicPassword ""
- 
+
  # The super admin password
  mm_rcon.rconPassword ""
- 
+
  # The depth of the listen queue to use
  mm_rcon.rconListenQueue 5
- 
+
  # Allow batching
  mm_rcon.allowBatching 1
- 
+
  # Enable port lingering
  mm_rcon.enableLinger 0
-  
+
  # The level a user gets when using the rconBasicPassword
  mm_rcon.basicAuthLevel 50
- 
+
  # The level a user gets when using the rconPassword ( super password )
  mm_rcon.superAuthLevel 100
- 
+
  # Log all rcon commands executed by admins at info level ( disabled by default )
  mm_rcon.logCommands 0
- 
+
  # The time to linger for
  mm_rcon.lingerFor 1
- 
+
  # Enable Address / port reuse
  mm_rcon.reuseAddress 1
- 
+
  # The message to broadcast when a player becomes admin ( rcon login <password> )
  mm_rcon.loginMessage "Player '%s' became a server administrator"
- 
+
  # The message to broadcast when a player give up admin ( rcon logout )
  mm_rcon.logoutMessage "Player '%s' gave up administrator rights"
- 
+
  # Lock settings so they cant be changed from their initial values
  mm_rcon.addLockedSetting "sv.coopBotCount"
- 
+
  # Restrict gametypes so they cant be used
  mm_rcon.addRestrictedGametype "bf2.gpm_coop"
- 
+
  # Enable advanced map size validation via map.desc files
  # This is disabled by default as custom maps often have invalid .desc files
  mm_rcon.advancedMapSizeValidation 0
@@ -59,47 +59,47 @@
  # for players the parameter is the password for rcon users this is the
  # password hash generated using the given salt
  login <password|password_hash>
- 
+
  # Logout of rcon, this removes all the users privaledges
  logout
- 
+
  # List the rcon users
  users
- 
+
  # Execute a console command
  exec
-  
+
  # Kick a player from the server with a message
  kick <playerid> "<reason>"
-  
+
  # Ban a player from the server with a message
  ban <playerid> "<reason>"
- 
+
  # Ban a player for a specified timer period from the server with a message.
  banby <playerid> <bannedby> <period> "<reason>"
- 
+
  # Display the current banlist
  banlist
- 
+
  # Clear the current banlist
  clearbans
- 
+
  # Unban a player with an optional reason.
  unban <address|cdkey> "<reason>"
- 
+
  # List the players on the server
  list
- 
+
  # Prints your profileid ( in game only )
  profileid
- 
+
  # Print a list of players and their profileid's
  profileids
-  
+
  # Display help, if a command is named detailed help is displayed on
  # just this command
  help [command]
- 
+
  # Change to a specific map gametype and optional size
  map <map> <gametype> [<size>]
 
@@ -147,10 +147,10 @@ Other notes:
 ===== History =====
  v8.7 - 15/05/2013
  Fixed typo
- 
+
  v8.6 - 14/05/2013
  Added dependant_day_night for Heroes
- 
+
  v8.5 - 29/01/2013
  Added compatibility for long values
 
@@ -162,10 +162,10 @@ Other notes:
 
  v8.2 - 22/10/2012
  Added new gametype to Play4Free
- 
+
  v8.1 - 19/09/2012
  Corrected spelling of dependant_day
- 
+
  v8.0 - 17/07/2012
  Added dependent_day to Heroes
 
@@ -174,10 +174,10 @@ Other notes:
 
  v7.12 - 21/06/2012
  Added river to Heores
- 
+
  v7.11 - 24/05/2012
  Added Trail to Play 4 Free
- 
+
  v7.10 - 17/04/2012
  Added Lunar Landing to Heroes
 
@@ -195,7 +195,7 @@ Other notes:
 
  v7.5 - 21/11/2011:
  Added CTF gametype to Battlefield Heroes
- 
+
  v7.4 - 18/10/2011:
  Added royal_rumble for Battlefield Heroes
 
@@ -207,10 +207,10 @@ Other notes:
 
  v7.1 - 09/06/2011:
  Added Basra (downtown) for Battlefield Play 4 Free
- 
+
  v7.0 - 31/03/2011:
  Added Sharqi for Battlefield Play 4 Free
- 
+
  v6.9 - 28/03/2011:
  Re-added woodlands to Battlefield Heroes
 
@@ -246,16 +246,16 @@ Other notes:
 
  v5.8 - 15/06/2009:
  Made maplist checks case insensitive
- 
+
  v5.7 - 03/06/2009:
  Added smack2 map to list of ranked server maps for Heroes
- 
+
  v5.6 - 03/06/2009:
  Changed maplist.listAvailable to maplist.listAll to match bfheroes release
- 
+
  v5.5 - 31/05/2009:
  Added listlocked command to support better user interaction in bfhcc
- 
+
  v5.4 - 13/01/2009:
  Added Heroes support and removed duplicate maps in bf2
  Added maplist.listavailable support method for bfhcc
@@ -265,36 +265,36 @@ Other notes:
 
  v5.2 - 01/07/2007:
  Fixed an issue mapValidateSize of coop / none standard gametypes
- 
+
  v5.1 - 26/06/2007:
  Added Highway Tampa to the ranked map list
  Exposed kickPlayer, banPlayer and banPlayerId for use with IGA
- 
+
  v5.0 - 22/06/2007:
  Fixed a bug in map list validation which would prevent invalid maps from being removed
- 
+
  v4.9 - 31/05/2007:
  Fix for authedAllowed being not defined in some situations
- 
+
  v4.8 - 08/12/2006:
  Added the new maps for Northern Front
 
  v4.7 - 08/12/2006:
  Enhanced mapRun to support None gametype / size parameters
- 
+
  v4.6 - 03/11/2006:
  Kick and Ban handlers now support player names as well as player id's
 
  v4.5 - 27/10/2006:
  Enhanced mapRun to deal with mixed up case maps and gametype.
- 
+
  v4.4 - 17/10/2006:
  map and admin.runLevel commands now return OK to the rcon client
  N.B. No error checking is possible as the underlying rcon commands produce no output.
- 
+
  v4.3 - 10/10/2006:
  Corrected error in maplist.append processing
- 
+
  v4.2 - 10/10/2006:
  Added basic and advanced map size validation. Advanced via map.desc is disabled by default
 
@@ -302,16 +302,16 @@ Other notes:
  Added run map ability which enhances the way bf2142 implements admin.runLevel as well as adding it to BF2
  Added rcon command: map <map> <gametype> [<size>]
  Added enhanced map management functions which enables maplist.XXXX commands to behave as expected
- 
+
  v4.0 - 29/10/2006:
  Fixed unregister call which now gets called by bf2142
- 
+
  v3.9 - 19/09/2006:
  Added logged warning messages for important failures of rcon commands
- 
+
  v3.8 - 18/09/2006:
  Added 2142 maps
- 
+
  v3.7 - 30/08/2006:
  Added supported games
 
@@ -327,7 +327,7 @@ Other notes:
  Added lockedSettings config option which allows admins to lock settings from being changed
  Added allowedGametypes config option which allows admins to restrict the gametypes that can be played
  Added modDir helper method
- 
+
  v3.3 - 24/03/2006:
  Enhanced error catching
 
@@ -335,12 +335,12 @@ Other notes:
  Now uses banmanager.kickPlayer hence requires MM v1.2
  Changed authed message format to be more prominent
  Kick and Ban methods now use advanced argument parsing which supports quoted and arguments
- 
+
  v3.1 - 19/02/2006:
  Updated parameter list for admin.removeAddressFromBanList and admin.removeKeyFromBanList
  Added number argument validation checks to exec overridden methods
  Both admin.removeAddressFromBanList and admin.removeKeyFromBanList now return an error string if the remove failed
- 
+
  v3.0 - 15/02/2006:
  Now correctly deals with admin.addAddressToBanList and admin.addKeyToBanList including an extended 3rd argument "reason"
  Fixed admin.banplayer ban type
@@ -354,36 +354,36 @@ Other notes:
  Added clearbans rcon method
  Added unban rcon method
  Updated ranked restricted maps for BF2 v1.2 patch
- 
+
  v2.8 - 05/02/2006:
  Added maplist rcon command which has a low auth level for use with bf2cc
- 
+
  v2.7 - 02/02/2006:
  Now uses the Ban Manager for baning players
 
  v2.6 - 28/11/2005:
  Fix for errors on accept causing rcon to stop functioning
- 
+
  v2.5 - 17/11/2005:
  Added Special Forces official Maps
 
  v2.4 - 06/10/2005:
  Fixed logCommands option
- 
+
  v2.3 - 04/10/2005:
  Added new offcial map
- 
+
  v2.2 - 22/09/2005:
  Added rcon methods profileid and profileids. N.B. profileid is an unauthed method
- 
+
  v2.1 - 20/09/2005:
  Fix for BF2CC maplist management ( strips quotes from map names )
- 
+
  v2.0 - 18/08/2005:
  Added log option for all commands used
  Added checks for official maps on ranked servers
  Added flush on DOS disconnects
- 
+
  v1.9 - 17/08/2005:
  Corrected unauthorised message print
  Extra security checks now prevent the use of blank passwords
@@ -393,7 +393,7 @@ Other notes:
  v1.8 - 12/08/2005:
  If both basic and super passwords are the same the user is authed
  with at super level
- 
+
  v1.7 - 30/07/2005:
  Added crash protection against long game.sayAll and game.sayTeam
  Added multi level authentication support
@@ -533,6 +533,16 @@ configDefaults = {
 	'rconPort': 4711,
 	'rconIp': '0.0.0.0',
 	'rconBasicPassword': '',
+	'admins': {
+		2001: {
+			"password": "password",
+			"authLevel": 50,
+		},
+		44981: {
+			"password": "openspy",
+			"authLevel": 50,
+		},
+	},
 	'rconPassword': '',
 	'rconListenQueue': 5,
 	'allowBatching': 1,
@@ -1196,6 +1206,14 @@ class AdminServer(object):
 				return self.__config['superAuthLevel']
 			elif self.__config['rconBasicPassword'] and password == self.__config['rconBasicPassword']:
 				return self.__config['basicAuthLevel']
+			else:
+				player = bf2.playerManager.getPlayerByIndex(ctx.player)
+				profileId = player.getProfileId()
+				if profileId not in self.__config["admins"]:
+					return 0
+				if self.__config["admins"][profileId]["password"] != password:
+					return 0
+				return self.__config["admins"][profileId]["authLevel"]
 
 		else:
 			# tcp client, require seeded digest to match instead of password
@@ -1230,7 +1248,7 @@ class AdminServer(object):
 		"""Return the current mod directory"""
 		modDirs = str( host.sgl_getModDirectory() ).replace( '\\', '/' ).split( '/' )
 		return modDirs[modDirs.__len__() - 1]
-		
+
 	def allowMap( self, map_name ):
 		"""Return True if the named map is permitted by the ranked mod / map name False otherwise"""
 		if host.ss_getParam('ranked'):
@@ -1679,7 +1697,7 @@ class AdminServer(object):
 		elif 'gpm_hoth' == default_gametype:
 			# V2 Vengence only supports 16
 			default_size = 16
-		
+
 		elif 'gpm_ctf' == default_gametype:
 			# Capture the Flag only supports 16
 			default_size = 16
@@ -1692,7 +1710,7 @@ class AdminServer(object):
 			# Rush only supports 32
 			default_size = 32
 
-			
+
 		return ( default_gametype, default_size )
 
 
@@ -1737,9 +1755,9 @@ class AdminServer(object):
 				# Conquest Assault only supports 64
 				default_size = 64
 
-			if 1 != self.__config['advancedMapSizeValidation']:		
+			if 1 != self.__config['advancedMapSizeValidation']:
 				return size
-		
+
 			self.mm.debug( 5, "SIZE2: %d" % ( size ) )
 			if not self.__mapDetails.has_key( map_name ):
 				try:
@@ -1847,7 +1865,7 @@ class AdminServer(object):
 			ctx.write( "Banlist cleared\n" )
 		else:
 			ctx.write( "Banlist failed to clear\n" )
-	
+
 
 	def banPlayer( self, ctx, cmd, wild=False ):
 		"""Ban a player for a specified timer period from the server with a message."""
@@ -1890,7 +1908,7 @@ class AdminServer(object):
 				player = bf2.playerManager.getPlayerByIndex( ctx.player )
 				ctx.write( "Your profileid is %s\n" % player.getProfileId() )
 			except:
-				ctx.write( "Error: failed to find playerid %d\n" % ctx.player )			
+				ctx.write( "Error: failed to find playerid %d\n" % ctx.player )
 		else:
 			ctx.write( "Error: You can only use this command in game\n" )
 
@@ -1912,7 +1930,7 @@ class AdminServer(object):
 		"""Changes the server to a specific map"""
 		( map_name, gametype, size ) = mm_utils.largs( cmd.strip().lower(), ' ', 3, None )
 		self.mapRun( ctx, map_name, gametype, size )
-		
+
 	def cmdListPlayers( self, ctx, cmd ):
 		"""List the players on the server."""
 		try:
@@ -1998,7 +2016,7 @@ class AdminServer(object):
 				# Clear out our internals
 				self.__nextLevel = None
 				self.__tempLevels = []
-				
+
 	def validateMaplist( self ):
 		"""Check the maplist is valid"""
 		self.mm.info( "Validating maplist..." )
