@@ -136,13 +136,13 @@ class Admin( object ):
 		cmdSplitLen = len(cmdSplit)
 
 		if cmdSplitLen < 2:
-			ctx.write("TODO: playername reason")
+			ctx.write("Error: You passed '%d' paramters, but at least '%d' are required.\n" % ( cmdSplitLen, 2 ))
 			return 0
 
 		player = mm_utils.find_player(cmdSplit[0])
 
 		if player == None:
-			ctx.write("TODO: player not found")
+			ctx.write("Error: Player '%s' couldn't be found by wildchard search.\n" % ( cmdSplit[0] ))
 			return 0
 
 		reason = " ".join(cmdSplit[1:])
@@ -162,7 +162,7 @@ class Admin( object ):
 		cmdSplitLen = len(cmdSplit)
 
 		if cmdSplitLen < 3:
-			ctx.write("TODO: playername reason")
+			ctx.write("Error: You passed '%d' paramters, but at least '%d' are required.\n" % ( cmdSplitLen, 3 ))
 			return 0
 
 		player = mm_utils.find_player(cmdSplit[0])
@@ -185,7 +185,7 @@ class Admin( object ):
 		period = mm_utils.get_int(ctx, period[:-1])
 
 		if period == None:
-			ctx.write("TODO: period[:-1] is not an int and not perm")
+			ctx.write("Error: Period is invalid.\n")
 			return 0
 
 		reason += " ("
@@ -205,7 +205,7 @@ class Admin( object ):
 			reason += "minute"
 			period *= 60
 		else:
-			ctx.write("TODO: unknown perdio not d, h or m")
+			ctx.write("Error: Period charachter is invalid.\n")
 			return 0
 		reason += reasonSuffix
 
@@ -230,7 +230,7 @@ class Admin( object ):
 		cmdSplitLen = len(cmdSplit)
 
 		if cmdSplitLen < 2:
-			self.mm.info("TODO: <playername> <reason>")
+			ctx.write("Error: You passed '%d' paramters, but at least '%d' are required.\n" % ( cmdSplitLen, 2 ))
 			return
 
 		playerName = cmdSplit[0]
@@ -240,10 +240,10 @@ class Admin( object ):
 		bansLen = len(bans)
 
 		if bansLen == 0:
-			self.mm.info("TODO: No ban found.")
+			ctx.write("Error: Couldn't find a ban of player '%s' by wildchard search.\n" % ( playerName ))
 			return
 		elif bansLen > 1:
-			self.mm.info("TODO: More than one ban found.")
+			ctx.write("Error: Found multiple bans of player '%s' by wildchard search.\n" % ( playerName ))
 			return
 
 		ban = bans[0]
@@ -254,7 +254,7 @@ class Admin( object ):
 		elif ban["method"] == mm_utils.BanMethod.address:
 			banKey = ban["address"]
 		else:
-			self.mm.info("TODO: Ban method is invalid (it's not a key or address ban).")
+			ctx.write("Error: Invalid ban method (it's not key or address). This case should never occur.\n")
 			return
 
 		self.mm.banManager().unbanPlayer(banKey, reason)

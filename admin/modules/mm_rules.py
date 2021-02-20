@@ -62,7 +62,7 @@ class Rules( object ):
 		self.__state = 0
 
 		# Const messages
-		self.LESS_THAN_2_PARAMS = "You passed '%i' parameter but, required are at least 2."
+		self.LESS_THAN_2_PARAMS = "You passed '%d' parameter but, required are at least 2."
 
 		# Add any static initialisation here. TODO TODO TODO
 		# Note: Handler registration should not be done here
