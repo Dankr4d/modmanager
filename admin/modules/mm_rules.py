@@ -155,7 +155,12 @@ class Rules( object ):
 		return 1
 
 
-	def onChatMessage(self, playerid, text, channel, flags):
+	def onChatMessage(self, playerIdx, text, channel, flags):
+		if playerIdx == -1:
+			return
+
+		text = text.replace("HUD_CHAT_DEADPREFIX", "")
+
 		if text.strip().lower() != "/rules":
 			return
 

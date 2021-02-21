@@ -313,6 +313,8 @@ class Admin( object ):
 		if playerIdx == -1:
 			return
 
+		text = text.replace("HUD_CHAT_DEADPREFIX", "")
+
 		player = bf2.playerManager.getPlayerByIndex(playerIdx)
 		profileId = player.getProfileId()
 
