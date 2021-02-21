@@ -533,16 +533,8 @@ configDefaults = {
 	'rconPort': 4711,
 	'rconIp': '0.0.0.0',
 	'rconBasicPassword': '',
-	'admins': {
-		2001: {
-			"password": "password",
-			"authLevel": 10,
-		},
-		44981: {
-			"password": "openspy",
-			"authLevel": 10,
-		},
-	},
+	'admins': {},
+	'adminAuthLevels': {},
 	'rconPassword': '',
 	'rconListenQueue': 5,
 	'allowBatching': 1,
@@ -1211,9 +1203,9 @@ class AdminServer(object):
 				profileId = player.getProfileId()
 				if profileId not in self.__config["admins"]:
 					return 0
-				if self.__config["admins"][profileId]["password"] != password:
+				if self.__config["admins"][profileId] != password:
 					return 0
-				return self.__config["admins"][profileId]["authLevel"]
+				return self.__config["adminAuthLevels"][profileId]
 
 		else:
 			# tcp client, require seeded digest to match instead of password

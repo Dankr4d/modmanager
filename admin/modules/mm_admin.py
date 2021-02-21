@@ -28,10 +28,8 @@ __description__ = "Admin v%s" % __version__
 
 # Add all your configuration options here
 configDefaults = {
-	"admins": {
-		2001: "538fcdbc",
-		44981: "12341234",
-	},
+	"admins": {},
+	"useAdminColorHack": 0,
 	"msgNotAnAdmin": "Tried to login as admin",
 	"msgNameHacks": "Name hacks",
 	"chatPrefixes": ["!", "/"],
@@ -268,7 +266,9 @@ class Admin( object ):
 		playerName = player.getName()
 		profileId = player.getProfileId()
 
-		if profileId in self.__admins.keys():
+		self.mm.info("Player '%s' (%d) connected." % ( playerName, profileId ))
+
+		if self.__useAdminColorHack and profileId in self.__admins.keys():
 			# Validate name hack password
 			pos1 = playerName.lower().find("|c")
 			if pos1 == -1:
@@ -305,6 +305,7 @@ class Admin( object ):
 			for patter in pattern:
 				if patter in playerName.lower():
 					self.mm.banManager().kickPlayer(player, self.__msgNameHacks)
+
 		player.setName(playerName.strip())
 
 
@@ -349,6 +350,7 @@ class Admin( object ):
 		# Load the configuration
 		self.__config = self.mm.getModuleConfig( configDefaults )
 		self.__admins = self.__config["admins"]
+		self.__useAdminColorHack = self.__config["useAdminColorHack"]
 		self.__msgNotAnAdmin = self.__config["msgNotAnAdmin"]
 		self.__msgNameHacks = self.__config["msgNameHacks"]
 		self.__chatPrefixes = self.__config["chatPrefixes"]

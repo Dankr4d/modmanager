@@ -39,17 +39,7 @@ configDefaults = {
 	"ruleWarnNewlines": 13, # Newlines are added on warning
 	"showRuleWarnBlur": 1, # Trigger blur effect when user is found
 	"replaceWelcomeMessageWithRules": 1, # Will replace the welcome messages with the rules
-	"rules": [
-		"No teamkilling",
-		"No highroofing",
-		"No glitching",
-		"No baserape",
-		"No fighting commander",
-		"No bad language",
-		"No pod surfing",
-		"No mines on titan shield",
-		"No spotting in titan guns when shields are down",
-	],
+	"rules": [],
 }
 
 class Rules( object ):
