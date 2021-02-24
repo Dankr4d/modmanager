@@ -52,6 +52,8 @@ class MapRotation( object ):
 		# Add any static initialisation here.
 		# Note: Handler registration should not be done here
 		# but instead in the init() method
+		self.__currentMapList = 0
+		self.__nextMapList = 0
 
 		# Your rcon commands go here:
 		self.__cmds = {}
@@ -78,12 +80,29 @@ class MapRotation( object ):
 		if not playerConnected:
 			playerCount -= 1
 
-		if playerCount in self.__maplists:
-			mm_utils.msg_server("New maplist set: " + self.__maplists[playerCount])
-			host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[playerCount])
-			host.rcon_invoke("mapList.load")
-			if self.__force or playerCount == 0:
+		for treshhold in self.__maplists.keys():
+			if playerCount >= treshhold:
+				self.__nextMapList = treshhold
+
+		if self.__currentMapList != self.__nextMapList:
+			mm_utils.msg_server("New maplist set: " + self.__maplists[self.__nextMapList])
+
+			if self.__force:
+				host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
+				host.rcon_invoke("mapList.load")
 				host.rcon_invoke("admin.runNextLevel")
+
+
+	def onGameStatusChanged( self, status ):
+		if status != bf2.GameStatus.EndGame:
+			return
+
+		if self.__currentMapList != self.__nextMapList:
+			host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
+			host.rcon_invoke("mapList.load")
+			if self.__force:
+				host.rcon_invoke("admin.runNextLevel")
+			self.__currentMapList = self.__nextMapList
 
 
 	def onPlayerConnect(self, player):
@@ -120,6 +139,8 @@ class MapRotation( object ):
 			# Register your host handlers here
 			host.registerHandler("PlayerConnect", self.onPlayerConnect, 1)
 			host.registerHandler("PlayerDisconnect", self.onPlayerDisconnect, 1)
+			host.registerGameStatusHandler( self.onGameStatusChanged )
+
 
 		# Register our rcon command handlers
 		# self.mm.registerRconCmdHandler( 'm', { 'method': self.cmdExec, 'subcmds': self.__cmds, 'level': 1 } ) # TODO: Disabled because see comment on top of the file
