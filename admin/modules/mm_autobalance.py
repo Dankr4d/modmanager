@@ -7,15 +7,15 @@ This is a autobalance system ModManager module
 
  # Allow Commander if 0 then we never autobalance the commander
  mm_autobalance.allowCommander 0
- 
+
  # Allow Squad Leader if 0 then we only autobalance squad leaders
  # if they are the only member of that squad
  mm_autobalance.allowSquadLeader 0
- 
+
  # Allow Squad Member if 0 then we only autobalance squad members
- # if there are no none squad members / commander on the team
+ # if there are only squad members, squad leaders and commander on the team
  mm_autobalance.allowSquadMember 0
- 
+
  # Allows plays to be switched teams at the end of a round
  # 0 => No swap
  # 1 => Swap teams
@@ -31,16 +31,16 @@ This is a autobalance system ModManager module
 
  v2.3 - 14/07/2009:
  Disabled this module for Heroes as its never valid due to the fixed player classes
- 
+
  v2.2 - 07/10/2006:
  Fixed off by one issue on player connect
 
  v2.1 - 03/10/2006:
  Merged with ClanMatch and enhanced to have multiple on round change methods
- 
+
  v2.0 - 13/09/2006:
  Enhancements / fixes merged from BF2142 Closed BETA 2
- 
+
  v1.9 - 30/08/2006:
  Added supported games
  Included changes from BF2142 Tuning BETA 2
@@ -50,27 +50,27 @@ This is a autobalance system ModManager module
 
  v1.7 - 20/05/2006:
  Added gpm_coop check from v1.3 patch
- 
+
  v1.6 - 08/08/2005:
  Fix for player joining during pre / post game not being balanced
  correctly.
 
  v1.5 - 03/08/2005:
  Optimised onPlayerConnect team check
- 
+
  v1.4 - 21/07/2005:
  Flagged as reload safe
- 
+
  v1.3 - 13/07/2005:
  Enhanced squad based autobalance descision making to take
  into account team composition.
- 
+
  v1.2 - 09/07/2005:
  Added commander, and squad balance options
- 
+
  v1.1 - 30/06/2005:
  Updated to ModManager format by Steven 'Killing' Hartland
- 
+
  v1.0:
  Created by: DICE
 """
@@ -191,9 +191,16 @@ class AutoBalance( object ):
 			# squad members / commander on this team
 			basic_players = 0
 			for tp in players:
-				if ( 0 == tp.getSquadId() ) and ( teamid == tp.getTeam() ) and ( not p.isCommander() ):
-					# none squad member / commander of this team
-					basic_players += 1
+				if tp.getTeam() != teamid:
+					continue
+				if tp.getSquadId() > 0:
+					continue
+				if tp.isCommander():
+					continue
+				if host.sgl_getIsAIGame() and not tp.isAIPlayer():
+					continue
+				# none squad member / commander of this team
+				basic_players += 1
 
 			if 0 != basic_players:
 				# we have basic players in this team we
