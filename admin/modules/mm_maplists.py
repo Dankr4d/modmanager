@@ -91,6 +91,7 @@ class MapRotation( object ):
 				host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
 				host.rcon_invoke("mapList.load")
 				host.rcon_invoke("admin.runNextLevel")
+				self.__currentMapList = self.__nextMapList
 
 
 	def onGameStatusChanged( self, status ):
@@ -100,8 +101,6 @@ class MapRotation( object ):
 		if self.__currentMapList != self.__nextMapList:
 			host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
 			host.rcon_invoke("mapList.load")
-			if self.__force:
-				host.rcon_invoke("admin.runNextLevel")
 			self.__currentMapList = self.__nextMapList
 
 
