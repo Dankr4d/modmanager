@@ -9,6 +9,8 @@ import sys
 sys.path.append('../Python-2.3.4/build/lib.linux-x86_64-2.3/')
 from xml.dom import minidom
 
+from random import shuffle
+
 
 # Set the version of your module here
 __version__ = 1.0
@@ -37,7 +39,57 @@ configDefaults = {
 		0: "maplist.con",
 	},
 	"force": 0,
+	"shuffle": 0,
 }
+
+
+def readMaps(path):
+  maplistFile = open(path, "r")
+  lines = maplistFile.readlines()
+  maplistFile.close()
+
+  result = []
+
+  for line in lines:
+    line = line.lower()
+    line = line.replace("\n", "")
+    line = line.replace("maplist.append ", "")
+    result.append(line)
+
+  return result
+
+
+def shuffleMaps(maps):
+  result = []
+
+  mapDict = {}
+
+  mapsCopy = maps[:] # Copying list to not mess the passed one
+  shuffle(mapsCopy)
+
+  for map in mapsCopy:
+    (mapName, mapMode, mapSize) = map.split()
+    if not mapDict.has_key(mapMode):
+      mapDict[mapMode] = []
+    mapDict[mapMode].append(map)
+
+  while True:
+    modeCnt = 0
+    for mode in mapDict:
+      if not mapDict[mode]:
+        continue
+      result.append(mapDict[mode].pop())
+      modeCnt += 1
+    if modeCnt == 0:
+      break
+
+  return result
+
+
+def loadMaps(maps):
+	host.rcon_invoke("maplist.clear")
+	for map in maps:
+		host.rcon_invoke("maplist.append " + map)
 
 
 class MapRotation( object ):
@@ -54,6 +106,8 @@ class MapRotation( object ):
 		# but instead in the init() method
 		self.__currentMapList = 0
 		self.__nextMapList = 0
+		self.__announcedMapListChange = False
+		self.__initShuffledMapList = False
 
 		# Your rcon commands go here:
 		self.__cmds = {}
@@ -86,22 +140,47 @@ class MapRotation( object ):
 
 		if self.__currentMapList != self.__nextMapList:
 			mm_utils.msg_server("New maplist set: " + self.__maplists[self.__nextMapList])
+			self.__announcedMapListChange = True
 
 			if self.__force:
-				host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
-				host.rcon_invoke("mapList.load")
+				if self.__shuffle:
+					maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
+					maps = shuffleMaps(maps)
+					loadMaps(maps)
+				else:
+					host.rcon_invoke("maplist.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
+					host.rcon_invoke("maplist.load")
 				host.rcon_invoke("admin.runNextLevel")
 				self.__currentMapList = self.__nextMapList
+				self.__announcedMapListChange = False
 
 
 	def onGameStatusChanged( self, status ):
-		if status != bf2.GameStatus.EndGame:
-			return
+		if status == bf2.GameStatus.Playing: # TODO: This should never be done if maplist module is loaded manually or reloaded!
+			# Only shuffle maplist once after server startup if shuffle flag is set
+			if not self.__shuffle:
+				return
+			if self.__initShuffledMapList:
+				return
 
-		if self.__currentMapList != self.__nextMapList:
-			host.rcon_invoke("mapList.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
-			host.rcon_invoke("mapList.load")
+			maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
+			maps = shuffleMaps(maps)
+			loadMaps(maps)
+			host.rcon_invoke("admin.runNextLevel")
+			self.__initShuffledMapList = True
+		elif status == bf2.GameStatus.EndGame:
+			if self.__currentMapList == self.__nextMapList:
+				return
+
+			if self.__shuffle:
+				maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
+				maps = shuffleMaps(maps)
+				loadMaps(maps)
+			else:
+				host.rcon_invoke("maplist.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
+				host.rcon_invoke("maplist.load")
 			self.__currentMapList = self.__nextMapList
+			self.__announcedMapListChange = False
 
 
 	def onPlayerConnect(self, player):
@@ -130,6 +209,7 @@ class MapRotation( object ):
 		self.__maplists = self.__config["maplists"]
 		self.__maplistPath = self.__config["maplistPath"]
 		self.__force = self.__config["force"]
+		self.__shuffle = self.__config["shuffle"]
 
 		# Register your game handlers and provide any
 		# other dynamic initialisation here
