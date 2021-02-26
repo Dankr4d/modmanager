@@ -9,7 +9,7 @@ import sys
 sys.path.append('../Python-2.3.4/build/lib.linux-x86_64-2.3/')
 from xml.dom import minidom
 
-from random import shuffle
+import random
 
 
 # Set the version of your module here
@@ -59,13 +59,13 @@ def readMaps(path):
   return result
 
 
-def shuffleMaps(maps):
+def shuffleMaps(maps, alterGameMode = None):
   result = []
 
   mapDict = {}
 
   mapsCopy = maps[:] # Copying list to not mess the passed one
-  shuffle(mapsCopy)
+  random.shuffle(mapsCopy)
 
   for map in mapsCopy:
     (mapName, mapMode, mapSize) = map.split()
@@ -73,16 +73,25 @@ def shuffleMaps(maps):
       mapDict[mapMode] = []
     mapDict[mapMode].append(map)
 
-  while True:
-    modeCnt = 0
-    for mode in mapDict:
-      if not mapDict[mode]:
-        continue
-      result.append(mapDict[mode].pop())
-      modeCnt += 1
-    if modeCnt == 0:
-      break
+  lastGameMode = ""
+  availableModes = mapDict.keys()
+  availableModesLen = len(availableModes)
+  while availableModesLen > 0:
+    if alterGameMode != None and lastGameMode != alterGameMode and alterGameMode in availableModes:
+        mode = alterGameMode
+    else:
+      if availableModesLen == 1:
+        mode = availableModes[0]
+      else:
+        mode = random.choice(availableModes)
+        while lastGameMode == mode:
+          mode = random.choice(availableModes)
 
+    result.append(mapDict[mode].pop())
+    if len(mapDict[mode]) == 0:
+      availableModes.remove(mode)
+      availableModesLen = len(availableModes)
+    lastGameMode = mode
   return result
 
 
@@ -145,7 +154,7 @@ class MapRotation( object ):
 			if self.__force:
 				if self.__shuffle:
 					maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
-					maps = shuffleMaps(maps)
+					maps = shuffleMaps(maps, "gpm_ti") # TODO: Create modmanager setting
 					loadMaps(maps)
 				else:
 					host.rcon_invoke("maplist.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
@@ -164,7 +173,7 @@ class MapRotation( object ):
 				return
 
 			maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
-			maps = shuffleMaps(maps)
+			maps = shuffleMaps(maps, "gpm_ti") # TODO: Create modmanager setting
 			loadMaps(maps)
 			host.rcon_invoke("admin.runNextLevel")
 			self.__initShuffledMapList = True
@@ -174,7 +183,7 @@ class MapRotation( object ):
 
 			if self.__shuffle:
 				maps = readMaps(self.__maplistPath + self.__maplists[self.__nextMapList])
-				maps = shuffleMaps(maps)
+				maps = shuffleMaps(maps, "gpm_ti") # TODO: Create modmanager setting
 				loadMaps(maps)
 			else:
 				host.rcon_invoke("maplist.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
