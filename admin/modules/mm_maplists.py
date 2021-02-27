@@ -115,7 +115,7 @@ class MapRotation( object ):
 		# but instead in the init() method
 		self.__currentMapList = 0
 		self.__nextMapList = 0
-		self.__announcedMapListChange = False
+		self.__lastAnnouncedMapList = 0
 		self.__initShuffledMapList = False
 
 		# Your rcon commands go here:
@@ -148,8 +148,9 @@ class MapRotation( object ):
 				self.__nextMapList = treshhold
 
 		if self.__currentMapList != self.__nextMapList:
-			mm_utils.msg_server("New maplist set: " + self.__maplists[self.__nextMapList])
-			self.__announcedMapListChange = True
+			if self.__lastAnnouncedMapList != self.__nextMapList:
+				mm_utils.msg_server("New maplist set: " + self.__maplists[self.__nextMapList])
+				self.__lastAnnouncedMapList = self.__nextMapList
 
 			if self.__force:
 				if self.__shuffle:
@@ -161,7 +162,6 @@ class MapRotation( object ):
 					host.rcon_invoke("maplist.load")
 				host.rcon_invoke("admin.runNextLevel")
 				self.__currentMapList = self.__nextMapList
-				self.__announcedMapListChange = False
 
 
 	def onGameStatusChanged( self, status ):
@@ -189,7 +189,6 @@ class MapRotation( object ):
 				host.rcon_invoke("maplist.configFile " + self.__maplistPath + self.__maplists[self.__nextMapList])
 				host.rcon_invoke("maplist.load")
 			self.__currentMapList = self.__nextMapList
-			self.__announcedMapListChange = False
 
 
 	def onPlayerConnect(self, player):
