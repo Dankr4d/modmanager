@@ -242,7 +242,7 @@ class MapRotation( object ):
 		# Unregister game handlers and do any other
 		# other actions to ensure your module no longer affects
 		# the game in anyway
-		# self.mm.unregisterRconCmdHandler( 'm' )
+		host.unregisterGameStatusHandler( self.onGameStatusChanged )
 
 		# Flag as shutdown as there is currently way to:
 		# host.unregisterHandler
